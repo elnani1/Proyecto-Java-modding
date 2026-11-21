@@ -4,6 +4,7 @@ import com.example.ExampleMod;
 import com.example.item.custom.MagicWandItem;
 import com.example.item.custom.HolyHandItem;
 import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -18,6 +19,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.Consumable;
 import net.minecraft.world.item.component.Consumables;
 import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
+import net.minecraft.world.item.consume_effects.ClearAllStatusEffectsConsumeEffect;
+import net.minecraft.world.item.consume_effects.PlaySoundConsumeEffect;
+import net.minecraft.world.item.consume_effects.RemoveStatusEffectsConsumeEffect;
+import net.minecraft.world.item.consume_effects.TeleportRandomlyConsumeEffect;
+import net.minecraft.sounds.SoundEvents;
 
 import java.util.function.Function;
 
@@ -70,6 +76,45 @@ public class ModItems {
 			new Item.Properties().stacksTo(1)
 	);
 
+	// --- Lección 2.4: consumibles con distintos ConsumeEffect ---
+	// Objetivo principal: aprender a LIMPIAR efectos al consumir.
+	//
+	// ConsumeEffect es lo que ocurre "al terminar de consumir" un Consumable.
+	// Ya conoces ApplyStatusEffectsConsumeEffect (aplicar efectos). En 26.2 también existen:
+	// - ClearAllStatusEffectsConsumeEffect: quita TODOS los efectos.
+	// - RemoveStatusEffectsConsumeEffect: quita solo ciertos efectos (por Holder o HolderSet).
+	// - PlaySoundConsumeEffect: reproduce un sonido.
+	// - TeleportRandomlyConsumeEffect: teletransporte aleatorio tipo fruta chorus (diametro).
+	//
+	// Variaciones (misma idea, distinto uso):
+	// - "Leche/mejor leche": solo limpiar -> ClearAllStatusEffectsConsumeEffect.INSTANCE
+	// - "Antídoto específico": solo quitar veneno -> new RemoveStatusEffectsConsumeEffect(MobEffects.POISON)
+	// - "Tónico ritual": limpiar + sonido -> .onConsume(ClearAll... ).onConsume(new PlaySoundConsumeEffect(...))
+	// - "Fruta extraña": teletransporte -> new TeleportRandomlyConsumeEffect() o con diámetro, ej. 16.0f
+	// - "Bebida de purga parcial": quitar varios -> new RemoveStatusEffectsConsumeEffect(HolderSet.direct(MobEffects.POISON, MobEffects.WITHER))
+	//
+	// Para este ejemplo principal implementamos una "infusión purificadora":
+	// limpia TODOS los efectos, y además reproduce un sonido al consumir.
+	public static final FoodProperties CLEANSING_TEA_FOOD = new FoodProperties.Builder()
+			.nutrition(2)
+			.saturationModifier(0.2f)
+			.alwaysEdible() // tiene sentido poder beberla aunque estés lleno, para curarte efectos
+			.build();
+
+	public static final Consumable CLEANSING_TEA_CONSUMABLE = Consumables.defaultDrink() // animación/sonido base de bebida
+			.onConsume(ClearAllStatusEffectsConsumeEffect.INSTANCE) // VARIACIÓN principal: limpia TODOS los efectos
+			.onConsume(new PlaySoundConsumeEffect(Holder.direct(SoundEvents.ZOMBIE_VILLAGER_CURE))) // VARIACIÓN: feedback sonoro al consumir
+			// Otras variaciones rápidas (descomenta/usa como guía):
+			// .onConsume(new RemoveStatusEffectsConsumeEffect(MobEffects.POISON)) // solo quita Veneno
+			// .onConsume(new TeleportRandomlyConsumeEffect(16.0f)) // teletransporte tipo chorus, diámetro 16
+			.build();
+
+	public static final Item CLEANSING_TEA = register(
+			ModItemIds.CLEANSING_TEA,
+			Item::new,
+			new Item.Properties().food(CLEANSING_TEA_FOOD, CLEANSING_TEA_CONSUMABLE)
+	);
+
 	// --- Lección 2: item de comida ---
 	// FoodProperties: define la nutrición/saturación y si se puede comer siempre.
 	public static final FoodProperties POISON_APPLE_FOOD = new FoodProperties.Builder()
@@ -108,6 +153,7 @@ public class ModItems {
 				output.accept(ModItems.LOPS);
 				output.accept(ModItems.POISON_APPLE);
                 output.accept(ModItems.CUPCAKE);
+				output.accept(ModItems.CLEANSING_TEA);
 				output.accept(ModItems.MAGIC_WAND);
                 output.accept(ModItems.HOLY_HAND);
 			})

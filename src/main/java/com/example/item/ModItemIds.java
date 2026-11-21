@@ -17,6 +17,7 @@ public class ModItemIds {
 	public static final ResourceKey<Item> CUPCAKE = create("cupcake"); //Mones (item consumible/comida)
 	public static final ResourceKey<Item> MAGIC_WAND = create("magic_wand");  //IA (item con comportamineto personalizado)
     public static final ResourceKey<Item> HOLY_HAND = create("holy_hand"); //Mones (item con comportamiento personalizado)
+	public static final ResourceKey<Item> CLEANSING_TEA = create("cleansing_tea"); //IA (Lección 2.4 - consumible con ConsumeEffect)
 
 	public static ResourceKey<Item> create(String name) {
 		// Crea la clave del item: modid:<name> dentro del registro de items
