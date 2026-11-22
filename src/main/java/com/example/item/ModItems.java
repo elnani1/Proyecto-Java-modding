@@ -10,6 +10,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
@@ -115,6 +116,50 @@ public class ModItems {
 			new Item.Properties().food(CLEANSING_TEA_FOOD, CLEANSING_TEA_CONSUMABLE)
 	);
 
+	// --- Lección 2.5: resto / transformación al consumir ---
+	// Objetivo principal: aprender a que un consumible DEJE UN RESTO o SE TRANSFORME al usarse.
+	//
+	// La clave es Item.Properties.usingConvertsTo(Item):
+	// - Al terminar de consumir, el ítem se reemplaza por el ítem indicado (si hay espacio/stack).
+	// - Ejemplos vanilla: sopa de hongos -> bowl, leche -> bucket, botella de miel -> glass bottle.
+	//
+	// Diferencia importante:
+	// - usingConvertsTo(...)  -> resto al CONSUMIR (comer/beber).
+	// - craftRemainder(...)   -> resto al CRAFTEAR (no lo cubrimos aquí, pero es la idea hermana).
+	//
+	// Variaciones (misma idea, distinto uso):
+	// - Sopa/estofado: defaultFood + usingConvertsTo(Items.BOWL)
+	// - Bebida en botella: defaultDrink + usingConvertsTo(Items.GLASS_BOTTLE)
+	// - Bebida en cubo: defaultDrink + usingConvertsTo(Items.BUCKET)
+	// - Ítem propio como resto: usingConvertsTo(ModItems.RUBY) o un ítem "frasco_vacio" propio
+	// - Sin resto: no pongas usingConvertsTo (como poison_apple/cupcake)
+	//
+	// Ejemplo principal: "Leche con miel" en botella.
+	// - Se bebe (defaultDrink)
+	// - Restaura un poco y limpia efectos negativos leves (aquí: quita Veneno; variación: ClearAll)
+	// - Al terminar deja Items.GLASS_BOTTLE
+	public static final FoodProperties HONEY_MILK_FOOD = new FoodProperties.Builder()
+			.nutrition(3)
+			.saturationModifier(0.4f)
+			.alwaysEdible() // útil como bebida "curativa"
+			.build();
+
+	public static final Consumable HONEY_MILK_CONSUMABLE = Consumables.defaultDrink()
+			.onConsume(new RemoveStatusEffectsConsumeEffect(MobEffects.POISON)) // principal de 2.4 aplicado con criterio
+			// Variaciones:
+			// .onConsume(ClearAllStatusEffectsConsumeEffect.INSTANCE) // más fuerte, tipo leche
+			// .onConsume(new PlaySoundConsumeEffect(Holder.direct(SoundEvents.HONEY_DRINK)))
+			.build();
+
+	public static final Item HONEY_MILK = register(
+			ModItemIds.HONEY_MILK,
+			Item::new,
+			new Item.Properties()
+					.food(HONEY_MILK_FOOD, HONEY_MILK_CONSUMABLE)
+					.usingConvertsTo(net.minecraft.world.item.Items.GLASS_BOTTLE) // CLAVE 2.5: deja botella al beber
+					.stacksTo(16) // opcional: como botellas/pociones, apila menos
+	);
+
 	// --- Lección 2: item de comida ---
 	// FoodProperties: define la nutrición/saturación y si se puede comer siempre.
 	public static final FoodProperties POISON_APPLE_FOOD = new FoodProperties.Builder()
@@ -154,6 +199,7 @@ public class ModItems {
 				output.accept(ModItems.POISON_APPLE);
                 output.accept(ModItems.CUPCAKE);
 				output.accept(ModItems.CLEANSING_TEA);
+				output.accept(ModItems.HONEY_MILK);
 				output.accept(ModItems.MAGIC_WAND);
                 output.accept(ModItems.HOLY_HAND);
 			})
