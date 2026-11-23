@@ -20,6 +20,7 @@ public class ModItemIds {
 	public static final ResourceKey<Item> CLEANSING_TEA = create("cleansing_tea"); //IA (Lección 2.4 - consumible con ConsumeEffect)
 	public static final ResourceKey<Item> HONEY_MILK = create("honey_milk"); //IA (Lección 2.5 - consumible con resto/transformación)
 	public static final ResourceKey<Item> MOSS_WAND = create("moss_wand"); //IA (Lección 3.3 - useOn sobre bloques)
+    public static final ResourceKey<Item> RASTREADOR = create("rastreador"); //Mones (Leccion 3.3 - useOn)
 
 	public static ResourceKey<Item> create(String name) {
 		// Crea la clave del item: modid:<name> dentro del registro de items

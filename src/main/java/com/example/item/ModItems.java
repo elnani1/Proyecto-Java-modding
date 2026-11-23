@@ -4,6 +4,7 @@ import com.example.ExampleMod;
 import com.example.item.custom.MagicWandItem;
 import com.example.item.custom.HolyHandItem;
 import com.example.item.custom.MossWandItem;
+import com.example.item.custom.RastreadorItem;
 import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -86,6 +87,12 @@ public class ModItems {
 			MossWandItem::new,
 			new Item.Properties().stacksTo(1)
 	);
+
+    public static final Item RASTREADOR = register(
+            ModItemIds.RASTREADOR,
+            RastreadorItem::new,
+            new Item.Properties()
+    );
 
 	// --- Lección 2.4: consumibles con distintos ConsumeEffect ---
 	// Objetivo principal: aprender a LIMPIAR efectos al consumir.
@@ -213,6 +220,7 @@ public class ModItems {
 				output.accept(ModItems.MAGIC_WAND);
 				output.accept(ModItems.MOSS_WAND);
                 output.accept(ModItems.HOLY_HAND);
+                output.accept(ModItems.RASTREADOR);
 			})
 			.build();
 
