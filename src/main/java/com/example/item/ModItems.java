@@ -3,6 +3,7 @@ package com.example.item;
 import com.example.ExampleMod;
 import com.example.item.custom.MagicWandItem;
 import com.example.item.custom.HolyHandItem;
+import com.example.item.custom.MossWandItem;
 import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -74,6 +75,15 @@ public class ModItems {
 	public static final Item MAGIC_WAND = register(
 			ModItemIds.MAGIC_WAND,
 			MagicWandItem::new,
+			new Item.Properties().stacksTo(1)
+	);
+
+	// --- Lección 3.3: interacción con bloques (useOn) ---
+	// Aquí el comportamiento depende del bloque clicado. La lógica va en MossWandItem.useOn(UseOnContext).
+	// Variaciones: transformar bloques, encender fuego, colocar algo, inspeccionar, gastar durabilidad, cooldown.
+	public static final Item MOSS_WAND = register(
+			ModItemIds.MOSS_WAND,
+			MossWandItem::new,
 			new Item.Properties().stacksTo(1)
 	);
 
@@ -201,6 +211,7 @@ public class ModItems {
 				output.accept(ModItems.CLEANSING_TEA);
 				output.accept(ModItems.HONEY_MILK);
 				output.accept(ModItems.MAGIC_WAND);
+				output.accept(ModItems.MOSS_WAND);
                 output.accept(ModItems.HOLY_HAND);
 			})
 			.build();
